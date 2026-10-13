@@ -38,7 +38,7 @@ jobs:
             --macos-create-app-bundle \
             --output-filename=ppc2 \
             --macos-app-icon=ppc2.icns \
-            main.py
+            ppc2.py
 
           echo "=== Build Complete ==="
 
