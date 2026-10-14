@@ -78,57 +78,61 @@ jobs:
             --assume-yes-for-downloads \
             ppc2.py
 
-      # --- ASSET PACKAGING & DEPLOYMENT ---
-      # Detects the operating system and bundles the binary along with your assets
+      # --- ASSET PACKAGING & DEPLOYMENT (UNIFIED PYTHON STEP) ---
       - name: Prepare Distribution Folder & Package Zip
-        shell: bash
+        shell: python
+        env:
+          MATRIX_OS: ${{ matrix.os }}
         run: |
-          mkdir -p release_folder
-          
+          import os
+          import shutil
+          import glob
+
+          os.makedirs("release_folder", exist_ok=True)
+          os_name = os.environ.get("MATRIX_OS")
+
           # Target binary movements dynamically based on the active runner OS
-          if [ "\${{ matrix.os }}" = "macos-latest" ]; then
-            mv ppc2.app release_folder/
-            ZIP_NAME="ppc2ForMac.zip"
-          elif [ "\${{ matrix.os }}" = "windows-latest" ]; then
-            # Windows creates a folder named ppc2.dist containing ppc2.exe
-            mv ppc2.dist release_folder/
-            ZIP_NAME="ppc2ForWindows.zip"
-          else
-            # Linux creates a folder named ppc2.dist containing the linux binary
-            mv ppc2.dist release_folder/
-            ZIP_NAME="ppc2ForLinux.zip"
-          fi
-          
-          # Safeguarded copy of your data/asset files beside the executable structures
-          cp *holidays.json release_folder/ || echo "No holiday files found, skipping..."
-          cp CalendarHelp.png release_folder/ || echo "CalendarHelp.png not found, skipping..."
-          
-          # Sweeps up the new readme.txt file and bundles it into the release folder
-          cp readme.txt release_folder/ || echo "readme.txt not found, skipping..."
-          
-          # Zip up the contents natively across all runners
-          cd release_folder
-          if [ "\${{ matrix.os }}" = "windows-latest" ]; then
-            powershell Compress-Archive -Path * -DestinationPath ../\$ZIP_NAME
-          else
-            zip -r ../\$ZIP_NAME *
-          fi
-          cd ..
-          
+          if os_name == "macos-latest":
+              if os.path.exists("ppc2.app"):
+                  shutil.move("ppc2.app", "release_folder/ppc2.app")
+              zip_name = "ppc2ForMac.zip"
+          elif os_name == "windows-latest":
+              if os.path.exists("ppc2.dist"):
+                  shutil.move("ppc2.dist", "release_folder/ppc2.dist")
+              zip_name = "ppc2ForWindows.zip"
+          else:
+              if os.path.exists("ppc2.dist"):
+                  shutil.move("ppc2.dist", "release_folder/ppc2.dist")
+              zip_name = "ppc2ForLinux.zip"
+
+          # Copy data/asset files beside the executable structures safely
+          for f in glob.glob("*holidays.json"):
+              shutil.copy(f, "release_folder/")
+          if os.path.exists("CalendarHelp.png"):
+              shutil.copy("CalendarHelp.png", "release_folder/")
+          if os.path.exists("readme.txt"):
+              shutil.copy("readme.txt", "release_folder/")
+
+          # Zip up the contents natively across all runners using Python's zip engine
+          shutil.make_archive(zip_name.replace(".zip", ""), "zip", "release_folder")
+
           # Persist the output filename safely for downstream deployment steps
-          echo "ZIP_OUTPUT=\(ZIP_NAME" >> \)GITHUB_ENV
+          github_env = os.environ.get("GITHUB_ENV")
+          if github_env:
+              with open(github_env, "a") as env_file:
+                  env_file.write(f"ZIP_OUTPUT={zip_name}\n")
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ppc2-\${{ matrix.os }}-bundle
-          path: \${{ env.ZIP_OUTPUT }}
+          name: ppc2-${{ matrix.os }}-bundle
+          path: ${{ env.ZIP_OUTPUT }}
           retention-days: 30
 
       - name: Release to GitHub (on Tag Push)
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: \${{ env.ZIP_OUTPUT }}
+          files: ${{ env.ZIP_OUTPUT }}
         env:
-          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
