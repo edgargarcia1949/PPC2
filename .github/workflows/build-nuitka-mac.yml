@@ -21,6 +21,12 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Recreate Python Source File from Secret
+        env:
+          ENCODED_SOURCE: ${{ secrets.PPC2_SOURCE_CODE }}
+        run: |
+          echo "$ENCODED_SOURCE" | base64 --decode > ppc2.py  
+
       - name: Install Dependencies & Nuitka
         run: |
           python -m pip install --upgrade pip
