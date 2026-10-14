@@ -101,7 +101,7 @@ jobs:
           
           # Safeguarded copy of your data/asset files beside the executable structures
           cp *holidays.json release_folder/ || echo "No holiday files found, skipping..."
-          cp CalendarHelp.bmp release_folder/ || echo "CalendarHelp.bmp not found, skipping..."
+          cp CalendarHelp.png release_folder/ || echo "CalendarHelp.png not found, skipping..."
           
           # Sweeps up the new readme.txt file and bundles it into the release folder
           cp readme.txt release_folder/ || echo "readme.txt not found, skipping..."
