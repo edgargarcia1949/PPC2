@@ -77,9 +77,9 @@ jobs:
             --output-filename=ppc2 \
             --assume-yes-for-downloads \
             ppc2.py
-
-      # --- ASSET PACKAGING & DEPLOYMENT (UNIFIED PYTHON STEP) ---
-      - name: Prepare Distribution Folder & Package Zip
+            
+      # --- ASSET PACKAGING & DEPLOYMENT (CLEAN & UNNESTED) ---
+      - name: Prepare Distribution Folder
         shell: python
         env:
           MATRIX_OS: ${{ matrix.os }}
@@ -88,45 +88,39 @@ jobs:
           import shutil
           import glob
 
-          os.makedirs("release_folder", exist_ok=True)
+          release_dir = "release_output"
+          os.makedirs(release_dir, exist_ok=True)
           os_name = os.environ.get("MATRIX_OS")
 
-          # Target binary movements dynamically based on the active runner OS
+          # Move the Nuitka build output into our clean release folder
           if os_name == "macos-latest":
               if os.path.exists("ppc2.app"):
-                  shutil.move("ppc2.app", "release_folder/ppc2.app")
-              zip_name = "ppc2ForMac.zip"
-          elif os_name == "windows-latest":
-              if os.path.exists("ppc2.dist"):
-                  shutil.move("ppc2.dist", "release_folder/ppc2.dist")
-              zip_name = "ppc2ForWindows.zip"
+                  shutil.move("ppc2.app", f"{release_dir}/ppc2.app")
+                  target_bin_dir = f"{release_dir}/ppc2.app/Contents/Resources"
+                  os.makedirs(target_bin_dir, exist_ok=True)
+              else:
+                  target_bin_dir = release_dir
           else:
+              # Windows and Linux use ppc2.dist
               if os.path.exists("ppc2.dist"):
-                  shutil.move("ppc2.dist", "release_folder/ppc2.dist")
-              zip_name = "ppc2ForLinux.zip"
+                  shutil.move("ppc2.dist", f"{release_dir}/ppc2.dist")
+                  target_bin_dir = f"{release_dir}/ppc2.dist"
+              else:
+                  target_bin_dir = release_dir
 
-          # Copy data/asset files beside the executable structures safely
+          # Copy data/asset files DIRECTLY inside the binary/app folder so the app can find them
           for f in glob.glob("*holidays.json"):
-              shutil.copy(f, "release_folder/")
+              shutil.copy(f, target_bin_dir)
           if os.path.exists("CalendarHelp.png"):
-              shutil.copy("CalendarHelp.png", "release_folder/")
+              shutil.copy("CalendarHelp.png", target_bin_dir)
           if os.path.exists("readme.txt"):
-              shutil.copy("readme.txt", "release_folder/")
-
-          # Zip up the contents natively across all runners using Python's zip engine
-          shutil.make_archive(zip_name.replace(".zip", ""), "zip", "release_folder")
-
-          # Persist the output filename safely for downstream deployment steps
-          github_env = os.environ.get("GITHUB_ENV")
-          if github_env:
-              with open(github_env, "a") as env_file:
-                  env_file.write(f"ZIP_OUTPUT={zip_name}\n")
+              shutil.copy("readme.txt", target_bin_dir)
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ppc2-${{ matrix.os }}-bundle
-          path: ${{ env.ZIP_OUTPUT }}
+          path: release_output/
           retention-days: 30
 
       - name: Release to GitHub (on Tag Push)
