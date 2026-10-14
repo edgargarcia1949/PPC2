@@ -36,9 +36,9 @@ jobs:
       - name: Recreate Python Source File from Secret
         shell: bash
         env:
-          ENCODED_SOURCE: \${{ secrets.PPC2_SOURCE_CODE }}
+          ENCODED_SOURCE: ${{ secrets.PPC2_SOURCE_CODE }}
         run: |
-          echo "\$ENCODED_SOURCE" | base64 --decode > ppc2.py
+          echo "$ENCODED_SOURCE" | base64 --decode > ppc2.py
 
       # --- MACOS SPECIFIC CONFIGURATION ---
       - name: Ensure Xcode Developer Directory is Set (macOS)
