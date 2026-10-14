@@ -54,7 +54,7 @@ jobs:
           
           # Copy all 9 holiday JSON files and the BMP help file beside the .app bundle
           cp *holidays.json release_folder/
-          cp CalendarHelp.bmp release_folder/
+          cp CalendarHelp.png release_folder/
           
           # Zip up the contents to create ppc2ForMac.zip
           cd release_folder
