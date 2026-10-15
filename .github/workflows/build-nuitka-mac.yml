@@ -40,7 +40,7 @@ jobs:
       - name: Install Dependencies & PyInstaller
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pyinstaller pygame
+          python -m pip install pyinstaller pygame pillow
 
       # --- SECRET SOURCE CODE DECRYPTION ---
       - name: Recreate Python Source File from Secret
@@ -58,7 +58,7 @@ jobs:
       # --- WINDOWS SPECIFIC BUILD ---
       - name: Build Windows Executable with PyInstaller
         if: matrix.platform == 'windows'
-        run: python -m PyInstaller --onedir --noconsole --name=ppc2 --windows-icon-from-ico=ppc2.ico ppc2.py
+        run: python -m PyInstaller --onedir --noconsole --name=ppc2 --icon=ppc2.ico ppc2.py
 
       # --- LINUX SPECIFIC BUILD ---
       - name: Build Linux Executable with PyInstaller
