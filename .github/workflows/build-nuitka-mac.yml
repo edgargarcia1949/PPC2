@@ -9,13 +9,24 @@ on:
 
 jobs:
   build:
-    name: Build ppc2 on ${{ matrix.os }}
+    name: Build ppc2 on ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        # Spawns three independent, parallel runners
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        include:
+          - name: macOS (Apple Silicon)
+            os: macos-latest
+            platform: macos-arm64
+          - name: macOS (Intel)
+            os: macos-13
+            platform: macos-intel
+          - name: Windows
+            os: windows-latest
+            platform: windows
+          - name: Linux
+            os: ubuntu-latest
+            platform: linux
 
     steps:
       - name: Checkout Code
@@ -32,7 +43,6 @@ jobs:
           pip install nuitka zstandard pygame
 
       # --- SECRET SOURCE CODE DECRYPTION ---
-      # This recreates the hidden ppc2.py file dynamically on all runner environments
       - name: Recreate Python Source File from Secret
         shell: bash
         env:
@@ -40,13 +50,13 @@ jobs:
         run: |
           echo "$ENCODED_SOURCE" | base64 --decode > ppc2.py
 
-      # --- MACOS SPECIFIC CONFIGURATION ---
+      # --- MACOS SPECIFIC CONFIGURATION (Both Apple Silicon and Intel) ---
       - name: Ensure Xcode Developer Directory is Set (macOS)
-        if: matrix.os == 'macos-latest'
+        if: contains(matrix.platform, 'macos')
         run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 
       - name: Build macOS App Bundle with Nuitka
-        if: matrix.os == 'macos-latest'
+        if: contains(matrix.platform, 'macos')
         run: |
           python -m nuitka \
             --standalone \
@@ -58,7 +68,7 @@ jobs:
 
       # --- WINDOWS SPECIFIC CONFIGURATION ---
       - name: Build Windows Executable with Nuitka
-        if: matrix.os == 'windows-latest'
+        if: matrix.platform == 'windows'
         run: |
           python -m nuitka `
             --standalone `
@@ -70,7 +80,7 @@ jobs:
 
       # --- LINUX SPECIFIC CONFIGURATION ---
       - name: Build Linux Executable with Nuitka
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.platform == 'linux'
         run: |
           python -m nuitka \
             --standalone \
@@ -78,11 +88,11 @@ jobs:
             --assume-yes-for-downloads \
             ppc2.py
             
-      # --- ASSET PACKAGING & DEPLOYMENT (CLEAN & UNNESTED) ---
+      # --- ASSET PACKAGING & DEPLOYMENT ---
       - name: Prepare Distribution Folder
         shell: python
         env:
-          MATRIX_OS: ${{ matrix.os }}
+          MATRIX_PLATFORM: ${{ matrix.platform }}
         run: |
           import os
           import shutil
@@ -90,10 +100,10 @@ jobs:
 
           release_dir = "release_output"
           os.makedirs(release_dir, exist_ok=True)
-          os_name = os.environ.get("MATRIX_OS")
+          platform_name = os.environ.get("MATRIX_PLATFORM")
 
           # Move the Nuitka build output into our clean release folder
-          if os_name == "macos-latest":
+          if "macos" in platform_name:
               if os.path.exists("ppc2.app"):
                   shutil.move("ppc2.app", f"{release_dir}/ppc2.app")
                   target_bin_dir = f"{release_dir}/ppc2.app/Contents/Resources"
@@ -108,7 +118,7 @@ jobs:
               else:
                   target_bin_dir = release_dir
 
-          # Copy data/asset files DIRECTLY inside the binary/app folder so the app can find them
+          # Copy data/asset files DIRECTLY inside the binary/app folder
           for f in glob.glob("*holidays.json"):
               shutil.copy(f, target_bin_dir)
           if os.path.exists("CalendarHelp.png"):
@@ -119,7 +129,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ppc2-${{ matrix.os }}-bundle
+          name: ppc2-${{ matrix.platform }}-bundle
           path: release_output/
           retention-days: 30
 
@@ -127,6 +137,6 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ env.ZIP_OUTPUT }}
+          files: release_output/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
