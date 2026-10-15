@@ -17,7 +17,7 @@ Built with Python and Pygame.
 * Standalone Linux AppImage available
 
 > ### 💡 Need Help Using the App?
-> Press **`Control + H`** at any time while the application is open to toggle the built-in **Help Menu** (`CalendarHelp.png`). Pressing it again will return you straight back to your calendar screen!
+> Press **`Control + h`** at any time while the application is open to toggle the built-in **Help Menu** (`CalendarHelp.png`). Pressing it again will return you straight back to your calendar screen!
 
 
 ## Downloads & Installation
