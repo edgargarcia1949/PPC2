@@ -1,4 +1,4 @@
-name: Build ppc2 Multi-Platform Apps with Nuitka
+name: Build ppc2 Multi-Platform Apps with PyInstaller
 
 on:
   push:
@@ -37,10 +37,10 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install Dependencies & Nuitka
+      - name: Install Dependencies & PyInstaller
         run: |
           python -m pip install --upgrade pip
-          pip install nuitka zstandard pygame
+          pip install pyinstaller pygame
 
       # --- SECRET SOURCE CODE DECRYPTION ---
       - name: Recreate Python Source File from Secret
@@ -50,42 +50,35 @@ jobs:
         run: |
           echo "$ENCODED_SOURCE" | base64 --decode > ppc2.py
 
-      # --- MACOS SPECIFIC CONFIGURATION (Both Apple Silicon and Intel) ---
-      - name: Ensure Xcode Developer Directory is Set (macOS)
-        if: contains(matrix.platform, 'macos')
-        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
-
-      - name: Build macOS App Bundle with Nuitka
+      # --- MACOS SPECIFIC BUILD ---
+      - name: Build macOS App Bundle with PyInstaller
         if: contains(matrix.platform, 'macos')
         run: |
-          python -m nuitka \
-            --standalone \
-            --macos-create-app-bundle \
-            --output-filename=ppc2 \
-            --macos-app-icon=ppc2.icns \
-            --assume-yes-for-downloads \
+          python -m pyinstaller \
+            --onedir \
+            --windowed \
+            --name=ppc2 \
+            --icon=ppc2.icns \
             ppc2.py
 
-      # --- WINDOWS SPECIFIC CONFIGURATION ---
-      - name: Build Windows Executable with Nuitka
+      # --- WINDOWS SPECIFIC BUILD ---
+      - name: Build Windows Executable with PyInstaller
         if: matrix.platform == 'windows'
         run: |
-          python -m nuitka `
-            --standalone `
-            --disable-console `
-            --output-filename=ppc2 `
+          python -m pyinstaller `
+            --onedir `
+            --noconsole `
+            --name=ppc2 `
             --windows-icon-from-ico=ppc2.ico `
-            --assume-yes-for-downloads `
             ppc2.py
 
-      # --- LINUX SPECIFIC CONFIGURATION ---
-      - name: Build Linux Executable with Nuitka
+      # --- LINUX SPECIFIC BUILD ---
+      - name: Build Linux Executable with PyInstaller
         if: matrix.platform == 'linux'
         run: |
-          python -m nuitka \
-            --standalone \
-            --output-filename=ppc2 \
-            --assume-yes-for-downloads \
+          python -m pyinstaller \
+            --onedir \
+            --name=ppc2 \
             ppc2.py
             
       # --- ASSET PACKAGING & DEPLOYMENT ---
@@ -102,29 +95,26 @@ jobs:
           os.makedirs(release_dir, exist_ok=True)
           platform_name = os.environ.get("MATRIX_PLATFORM")
 
-          # Move the Nuitka build output into our clean release folder
+          # Determine target destination for assets and bundle
           if "macos" in platform_name:
-              if os.path.exists("ppc2.app"):
-                  shutil.move("ppc2.app", f"{release_dir}/ppc2.app")
-                  target_bin_dir = f"{release_dir}/ppc2.app/Contents/Resources"
-                  os.makedirs(target_bin_dir, exist_ok=True)
-              else:
-                  target_bin_dir = release_dir
+              if os.path.exists("dist/ppc2.app"):
+                  shutil.move("dist/ppc2.app", f"{release_dir}/ppc2.app")
+              target_asset_dir = f"{release_dir}/ppc2.app/Contents/Resources"
           else:
-              # Windows and Linux use ppc2.dist
-              if os.path.exists("ppc2.dist"):
-                  shutil.move("ppc2.dist", f"{release_dir}/ppc2.dist")
-                  target_bin_dir = f"{release_dir}/ppc2.dist"
-              else:
-                  target_bin_dir = release_dir
+              # Windows and Linux use the dist/ppc2 folder which contains the executable and _internal/
+              if os.path.exists("dist/ppc2"):
+                  shutil.move("dist/ppc2", f"{release_dir}/ppc2")
+              target_asset_dir = f"{release_dir}/ppc2"
 
-          # Copy data/asset files DIRECTLY inside the binary/app folder
+          os.makedirs(target_asset_dir, exist_ok=True)
+
+          # Copy data/asset files cleanly into the root app folder (next to the executable / Resources)
           for f in glob.glob("*holidays.json"):
-              shutil.copy(f, target_bin_dir)
+              shutil.copy(f, target_asset_dir)
           if os.path.exists("CalendarHelp.png"):
-              shutil.copy("CalendarHelp.png", target_bin_dir)
+              shutil.copy("CalendarHelp.png", target_asset_dir)
           if os.path.exists("readme.txt"):
-              shutil.copy("readme.txt", target_bin_dir)
+              shutil.copy("readme.txt", target_asset_dir)
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
