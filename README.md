@@ -47,8 +47,8 @@ If macOS still blocks the app, open your **Terminal** app and run the following 
 xattr -cr /path/to/ppc2.app
 
 For example, if you downloaded the zip file to your Downloads folder, you would run:
-Bash
 
+```bash
 xattr -cr ~/Downloads/ppc2.app
 
 🐧 Linux
