@@ -10,7 +10,7 @@ A highly customizable, feature-rich desktop calendar app that is truly like no o
 * **Deep Visual Customization:** Toggle between **3 different window sizes**, **6 custom highlight color schemes**, and **Dark/Light modes** to fit your desktop aesthetic.
 * **Regional Layouts:** Seamlessly switch between **USA mode** (week starts on Sunday) and **European mode** (week starts on Monday).
 * **Power-User Navigation:** Built-in keyboard key bindings let you instantly advance or go back by month, year, or jump exactly **10 years at a time**.
-* **Editable Holiday Integration:** Automatically loads holidays from simple, user-editable `20xxholiday.json` files. Add your own custom dates or remove the defaults with ease.
+* **Editable Holiday Integration:** Automatically loads holidays from simple, user-editable `20xxholidays.json` files. Add your own custom dates or remove the defaults with ease.
 * **Spreadsheet-Style Event Entry:** Type personal events directly from your keyboard into a grid format, exactly like editing a spreadsheet.
 * **100% Private & Local:** All personal events and application settings are completely local. The app requires zero cloud accounts or internet access.
 
