@@ -68,7 +68,7 @@ jobs:
         run: |
           echo "$ENCODED_SOURCE" | base64 --decode > ppc2.py
 
-      # --- MACOS SPECIFIC BUILD ---
+      # --- MACOS SPECIFIC BUILD (Assets bundled & signed natively by Nuitka) ---
       - name: Build macOS App Bundle with Nuitka
         if: contains(matrix.platform, 'macos')
         run: |
@@ -76,13 +76,16 @@ jobs:
             --standalone \
             --macos-create-app-bundle \
             --macos-app-icon=ppc2.icns \
+            --include-data-files="*holidays.json=." \
+            --include-data-files="CalendarHelp.png=." \
+            --include-data-files="readme.txt=." \
             --output-filename=ppc2 \
             ppc2.py
 
       # --- WINDOWS SPECIFIC BUILD ---
       - name: Build Windows Executable with Nuitka
         if: matrix.platform == 'windows'
-        run: python -m nuitka --standalone --windows-console-mode=disable --windows-icon-from-ico=ppc2.ico --output-filename=ppc2.exe ppc2.py
+        run: python -m nuitka --standalone --windows-console-mode=disable --windows-icon-from-ico=ppc2.ico --include-data-files="*holidays.json=." --include-data-files="CalendarHelp.png=." --include-data-files="readme.txt=." --output-filename=ppc2.exe ppc2.py
 
       # --- LINUX SPECIFIC BUILD ---
       - name: Build Linux Executable with Nuitka
@@ -90,6 +93,9 @@ jobs:
         run: |
           python -m nuitka \
             --standalone \
+            --include-data-files="*holidays.json=." \
+            --include-data-files="CalendarHelp.png=." \
+            --include-data-files="readme.txt=." \
             --output-filename=ppc2 \
             ppc2.py
             
@@ -101,39 +107,18 @@ jobs:
         run: |
           import os
           import shutil
-          import glob
-          import subprocess
 
           release_dir = "release_output"
           os.makedirs(release_dir, exist_ok=True)
           platform_name = os.environ.get("MATRIX_PLATFORM")
 
-          # Determine target destination for assets and bundle based on Nuitka output structure
+          # Move Nuitka's finished output cleanly into release_output
           if "macos" in platform_name:
               if os.path.exists("ppc2.app"):
                   shutil.move("ppc2.app", f"{release_dir}/ppc2.app")
-              target_asset_dir = f"{release_dir}/ppc2.app/Contents/Resources"
           else:
-              # Windows and Linux output folder (.dist)
               if os.path.exists("ppc2.dist"):
                   shutil.move("ppc2.dist", f"{release_dir}/ppc2")
-              target_asset_dir = f"{release_dir}/ppc2"
-
-          os.makedirs(target_asset_dir, exist_ok=True)
-
-          # Copy data/asset files cleanly into the root app folder (next to the executable / Resources)
-          for f in glob.glob("*holidays.json"):
-              shutil.copy(f, target_asset_dir)
-          if os.path.exists("CalendarHelp.png"):
-              shutil.copy("CalendarHelp.png", target_asset_dir)
-          if os.path.exists("readme.txt"):
-              shutil.copy("readme.txt", target_asset_dir)
-
-          # Re-sign the macOS app bundle so post-build asset additions don't break code signature validation
-          if "macos" in platform_name:
-              app_path = f"{release_dir}/ppc2.app"
-              print(f"Re-signing macOS app bundle at {app_path}...")
-              subprocess.run(["codesign", "--force", "--deep", "--sign", "-", app_path], check=True)
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
