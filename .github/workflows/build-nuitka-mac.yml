@@ -47,6 +47,19 @@ jobs:
         if: matrix.platform == 'linux'
         run: sudo apt-get update && sudo apt-get install -y patchelf
 
+      # Pre-cache Dependency Walker for Windows non-interactive build
+      - name: Setup Dependency Walker for Nuitka (Windows)
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: |
+          $dir = "$env:USERPROFILE\AppData\Local\Nuitka\Nuitka\Cache\downloads\depends\x86_64"
+          New-Item -ItemType Directory -Force -Path $dir | Out-Null
+          $url = "https://dependencywalker.com/depends22_x64.zip"
+          $output = "$dir\depends22_x64.zip"
+          Invoke-WebRequest -Uri $url -OutFile $output
+          Expand-Archive -Path $output -DestinationPath $dir -Force
+          Remove-Item $output
+
       # --- SECRET SOURCE CODE DECRYPTION ---
       - name: Recreate Python Source File from Secret
         shell: bash
