@@ -64,12 +64,12 @@ chmod +x ppc2-x86_64.AppImage
 Your privacy matters. All data is kept 100% offline and localized. Your application settings and calendar entries are stored in the standard configurations paths assigned by your operating system:
 
 Windows: ~\AppData\Roaming\
-macOS: ~/Library/Application Support/
+macOS: ~/Library/Application Support/  
 Linux: ~/.local/share/ (Respects $XDG_DATA_HOME)
 
 App Data Files:
 
-personal_events.json — Stores all your typed spreadsheet calendar events.
+personal_events.json — Stores all your typed spreadsheet calendar events.  
 ppc_config.json — Stores your layout size, dark/light mode preference, and color scheme selections.
 
 You can back up these specific files if you ever want to transfer your calendar data to a new computer!
