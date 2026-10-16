@@ -42,23 +42,23 @@ Because this app is independently developed and distributed via GitHub (without 
 
 #### Method 2: Via Terminal (If Gatekeeper blocks it)
 If macOS still blocks the app, open your **Terminal** app and run the following command to clear the download quarantine flag:  
-
+```bash
 xattr -cr /path/to/ppc2.app
-
+```
 For example, if you downloaded the zip file to your Downloads folder, you would run:
-
+```bash
 xattr -cr ~/Downloads/ppc2.app
-
+```
 🐧 Linux
 
     📥 Download ppc2-x86_64.AppImage
 
-    To Run: Make the AppImage executable and run it via terminal or file manager:
-    Bash
-
+    To Run: Make the AppImage executable and run it via terminal or file manage
+    ```bash
     chmod +x ppc2-x86_64.AppImage
     ./ppc2-x86_64.AppImage
-
+    ```
+    
 🔒 Storage & Data Transparency
 
 Your privacy matters. All data is kept 100% offline and localized. Your application settings and calendar entries are stored in the standard configurations paths assigned by your operating system:
