@@ -66,10 +66,10 @@ jobs:
             --output-filename=ppc2 \
             ppc2.py
 
-      # --- WINDOWS SPECIFIC BUILD (Single-line to avoid PowerShell line continuation issues) ---
+      # --- WINDOWS SPECIFIC BUILD ---
       - name: Build Windows Executable with Nuitka
         if: matrix.platform == 'windows'
-        run: python -m nuitka --standalone --windows-console-mode=disable --windows-ico-file=ppc2.ico --output-filename=ppc2.exe ppc2.py
+        run: python -m nuitka --standalone --windows-console-mode=disable --windows-icon-from-ico=ppc2.ico --output-filename=ppc2.exe ppc2.py
 
       # --- LINUX SPECIFIC BUILD ---
       - name: Build Linux Executable with Nuitka
