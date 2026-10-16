@@ -39,9 +39,11 @@ Because this app is independently developed and distributed via GitHub (without 
 4. Click **Open** on the security warning dialog. (You only need to do this the very first time you run the app).
 
 #### Method 2: Via Terminal (If Gatekeeper blocks it)
-If macOS still blocks the app, open your **Terminal** app and run the following command to clear the download quarantine flag:
+If macOS still blocks the app, open your **Terminal** app and run the following command to clear the download quarantine flag:  
+
 xattr -cr /path/to/ppc2.app
-On my Macbook Pro I downloaded the ppc2ForMac.zip file and ran:
+On my Macbook Pro I downloaded the ppc2ForMac.zip file and ran:  
+
 xattr -cr ~/Downloads/ppc2.app
 
 ### 🐧 Linux
