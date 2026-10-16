@@ -29,7 +29,21 @@ Select the package corresponding to your operating system to download the applic
 
 ### 🍏 macOS
 - 📥 **[Download ppc2ForMac.zip](./ppc2ForMac.zip)**
-- **To Run:** Unzip the package and run the `ppc2.app` bundle.
+
+Because this app is independently developed and distributed via GitHub (without a paid Apple Developer ID certificate), macOS Gatekeeper may flag it on first launch. You can bypass this easily using one of two methods:
+
+#### Method 1: The Quick GUI Way (Recommended)
+1. Unzip the downloaded `ppc2ForMac.zip` file to reveal `ppc2.app`.
+2. **Right-click** (or hold the `Control` key and click) on `ppc2.app`.
+3. Select **Open** from the context menu.
+4. Click **Open** on the security warning dialog. (You only need to do this the very first time you run the app).
+
+#### Method 2: Via Terminal (If Gatekeeper blocks it)
+If macOS still blocks the app, open your **Terminal** app and run the following command to clear the download quarantine flag:
+```bash
+xattr -cr /path/to/ppc2.app
+On my Macbook Pro I downloaded the ppc2ForMac.zip file and ran:
+xattr -cr ~/Downloads/ppc2.app
 
 ### 🐧 Linux
 - 📥 **[Download ppc2-x86_64.AppImage](./ppc2-x86_64.AppImage)**
