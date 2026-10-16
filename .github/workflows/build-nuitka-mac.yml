@@ -102,6 +102,7 @@ jobs:
           import os
           import shutil
           import glob
+          import subprocess
 
           release_dir = "release_output"
           os.makedirs(release_dir, exist_ok=True)
@@ -127,6 +128,12 @@ jobs:
               shutil.copy("CalendarHelp.png", target_asset_dir)
           if os.path.exists("readme.txt"):
               shutil.copy("readme.txt", target_asset_dir)
+
+          # Re-sign the macOS app bundle so post-build asset additions don't break code signature validation
+          if "macos" in platform_name:
+              app_path = f"{release_dir}/ppc2.app"
+              print(f"Re-signing macOS app bundle at {app_path}...")
+              subprocess.run(["codesign", "--force", "--deep", "--sign", "-", app_path], check=True)
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
