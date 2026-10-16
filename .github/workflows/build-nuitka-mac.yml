@@ -1,4 +1,4 @@
-name: Build ppc2 Multi-Platform Apps with PyInstaller
+name: Build ppc2 Multi-Platform Apps with Nuitka
 
 on:
   push:
@@ -37,10 +37,10 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install Dependencies & PyInstaller
+      - name: Install Dependencies & Nuitka
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pyinstaller pygame pillow
+          python -m pip install nuitka pygame pillow patchelf
 
       # --- SECRET SOURCE CODE DECRYPTION ---
       - name: Recreate Python Source File from Secret
@@ -51,19 +51,38 @@ jobs:
           echo "$ENCODED_SOURCE" | base64 --decode > ppc2.py
 
       # --- MACOS SPECIFIC BUILD ---
-      - name: Build macOS App Bundle with PyInstaller
+      - name: Build macOS App Bundle with Nuitka
         if: contains(matrix.platform, 'macos')
-        run: python -m PyInstaller --onedir --windowed --name=ppc2 --icon=ppc2.icns ppc2.py
+        run: |
+          python -m nuitka \
+            --standalone \
+            --macos-create-app-bundle \
+            --macos-app-icon=ppc2.icns \
+            --enable-plugin=pygame \
+            --output-filename=ppc2 \
+            ppc2.py
 
       # --- WINDOWS SPECIFIC BUILD ---
-      - name: Build Windows Executable with PyInstaller
+      - name: Build Windows Executable with Nuitka
         if: matrix.platform == 'windows'
-        run: python -m PyInstaller --onedir --noconsole --name=ppc2 --icon=ppc2.ico ppc2.py
+        run: |
+          python -m nuitka \
+            --standalone \
+            --windows-console-mode=disable \
+            --windows-ico-file=ppc2.ico \
+            --enable-plugin=pygame \
+            --output-filename=ppc2.exe \
+            ppc2.py
 
       # --- LINUX SPECIFIC BUILD ---
-      - name: Build Linux Executable with PyInstaller
+      - name: Build Linux Executable with Nuitka
         if: matrix.platform == 'linux'
-        run: python -m PyInstaller --onedir --name=ppc2 ppc2.py
+        run: |
+          python -m nuitka \
+            --standalone \
+            --enable-plugin=pygame \
+            --output-filename=ppc2 \
+            ppc2.py
             
       # --- ASSET PACKAGING & DEPLOYMENT ---
       - name: Prepare Distribution Folder
@@ -79,15 +98,19 @@ jobs:
           os.makedirs(release_dir, exist_ok=True)
           platform_name = os.environ.get("MATRIX_PLATFORM")
 
-          # Determine target destination for assets and bundle
+          # Determine target destination for assets and bundle based on Nuitka output structure
           if "macos" in platform_name:
-              if os.path.exists("dist/ppc2.app"):
-                  shutil.move("dist/ppc2.app", f"{release_dir}/ppc2.app")
+              if os.path.exists("ppc2.app"):
+                  shutil.move("ppc2.app", f"{release_dir}/ppc2.app")
               target_asset_dir = f"{release_dir}/ppc2.app/Contents/Resources"
+          elif "windows" in platform_name:
+              if os.path.exists("ppc2.dist"):
+                  shutil.move("ppc2.dist", f"{release_dir}/ppc2")
+              target_asset_dir = f"{release_dir}/ppc2"
           else:
-              # Windows and Linux use the dist/ppc2 folder which contains the executable and _internal/
-              if os.path.exists("dist/ppc2"):
-                  shutil.move("dist/ppc2", f"{release_dir}/ppc2")
+            # Linux output folder
+              if os.path.exists("ppc2.dist"):
+                  shutil.move("ppc2.dist", f"{release_dir}/ppc2")
               target_asset_dir = f"{release_dir}/ppc2"
 
           os.makedirs(target_asset_dir, exist_ok=True)
