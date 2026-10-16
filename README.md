@@ -50,10 +50,9 @@ For example, if you downloaded the zip file to your Downloads folder, you would 
 xattr -cr ~/Downloads/ppc2.app
 ```
 ### 🐧 Linux
+-  📥 **[Download ppc2-x86_64.AppImage](./ppc2-x86_64.AppImage)**
 
--  📥 Download ppc2-x86_64.AppImage
-
-To Run: Make the AppImage executable and run it via terminal or file manage
+To Run: Make the AppImage executable and run it via terminal or file manager
 ```bash
 chmod +x ppc2-x86_64.AppImage
 ./ppc2-x86_64.AppImage
