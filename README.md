@@ -49,31 +49,28 @@ For example, if you downloaded the zip file to your Downloads folder, you would 
 ```bash
 xattr -cr ~/Downloads/ppc2.app
 ```
-🐧 Linux
+### 🐧 Linux
 
-    📥 Download ppc2-x86_64.AppImage
+-  📥 Download ppc2-x86_64.AppImage
 
-    To Run: Make the AppImage executable and run it via terminal or file manage
-    ```bash
-    chmod +x ppc2-x86_64.AppImage
-    ./ppc2-x86_64.AppImage
-    ```
+To Run: Make the AppImage executable and run it via terminal or file manage
+```bash
+chmod +x ppc2-x86_64.AppImage
+./ppc2-x86_64.AppImage
+```
     
-🔒 Storage & Data Transparency
+### 🔒 Storage & Data Transparency
 
 Your privacy matters. All data is kept 100% offline and localized. Your application settings and calendar entries are stored in the standard configurations paths assigned by your operating system:
 
-    Windows: ~\AppData\Roaming\
-
-    macOS: ~/Library/Application Support/
-
-    Linux: ~/.local/share/ (Respects $XDG_DATA_HOME)
+Windows: ~\AppData\Roaming\
+macOS: ~/Library/Application Support/
+Linux: ~/.local/share/ (Respects $XDG_DATA_HOME)
 
 App Data Files:
 
-    personal_events.json — Stores all your typed spreadsheet calendar events.
-
-    ppc_config.json — Stores your layout size, dark/light mode preference, and color scheme selections.
+personal_events.json — Stores all your typed spreadsheet calendar events.
+ppc_config.json — Stores your layout size, dark/light mode preference, and color scheme selections.
 
 You can back up these specific files if you ever want to transfer your calendar data to a new computer!
 💬 Feedback & Bug Reports
