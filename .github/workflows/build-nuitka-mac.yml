@@ -40,7 +40,12 @@ jobs:
       - name: Install Dependencies & Nuitka
         run: |
           python -m pip install --upgrade pip
-          python -m pip install nuitka pygame pillow patchelf
+          python -m pip install nuitka pygame pillow
+
+      # Optional: Install patchelf on Linux via apt if needed for binary inspection
+      - name: Install patchelf (Linux Only)
+        if: matrix.platform == 'linux'
+        run: sudo apt-get update && sudo apt-get install -y patchelf
 
       # --- SECRET SOURCE CODE DECRYPTION ---
       - name: Recreate Python Source File from Secret
@@ -58,7 +63,6 @@ jobs:
             --standalone \
             --macos-create-app-bundle \
             --macos-app-icon=ppc2.icns \
-            --enable-plugin=pygame \
             --output-filename=ppc2 \
             ppc2.py
 
@@ -70,7 +74,6 @@ jobs:
             --standalone \
             --windows-console-mode=disable \
             --windows-ico-file=ppc2.ico \
-            --enable-plugin=pygame \
             --output-filename=ppc2.exe \
             ppc2.py
 
@@ -80,7 +83,6 @@ jobs:
         run: |
           python -m nuitka \
             --standalone \
-            --enable-plugin=pygame \
             --output-filename=ppc2 \
             ppc2.py
             
@@ -103,12 +105,8 @@ jobs:
               if os.path.exists("ppc2.app"):
                   shutil.move("ppc2.app", f"{release_dir}/ppc2.app")
               target_asset_dir = f"{release_dir}/ppc2.app/Contents/Resources"
-          elif "windows" in platform_name:
-              if os.path.exists("ppc2.dist"):
-                  shutil.move("ppc2.dist", f"{release_dir}/ppc2")
-              target_asset_dir = f"{release_dir}/ppc2"
           else:
-            # Linux output folder
+              # Windows and Linux output folder (.dist)
               if os.path.exists("ppc2.dist"):
                   shutil.move("ppc2.dist", f"{release_dir}/ppc2")
               target_asset_dir = f"{release_dir}/ppc2"
