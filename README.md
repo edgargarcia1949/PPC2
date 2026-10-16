@@ -63,8 +63,8 @@ chmod +x ppc2-x86_64.AppImage
 
 Your privacy matters. All data is kept 100% offline and localized. Your application settings and calendar entries are stored in the standard configurations paths assigned by your operating system:
 
-Windows: `~\AppData\Roaming\`
-macOS: `~/Library/Application Support/` 
+Windows: `~\AppData\Roaming\`  
+macOS: `~/Library/Application Support/`   
 Linux: `~/.local/share/ (Respects $XDG_DATA_HOME)`
 
 App Data Files:
