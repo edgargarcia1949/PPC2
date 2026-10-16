@@ -72,7 +72,8 @@ App Data Files:
 personal_events.json — Stores all your typed spreadsheet calendar events.  
 ppc_config.json — Stores your layout size, dark/light mode preference, and color scheme selections.
 
-You can back up these specific files if you ever want to transfer your calendar data to a new computer!  
+You can back up these specific files if you ever want to transfer your calendar data to a new computer! 
+
 💬 Feedback & Bug Reports
 
 I am actively looking for user feedback on the UI responsiveness, keyboard navigation shortcuts, and cross-platform stability. Please feel free to open a GitHub Issue to share your thoughts, feature requests, or report any bugs!
