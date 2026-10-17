@@ -1,3 +1,5 @@
+Markdown
+
 # ppc2 - Multi-featured Pretty Printable Calendar
 
 A highly customizable, feature-rich desktop calendar app that is truly like no other. Built with Python and Pygame for fast, pixel-perfect UI rendering across platforms.
@@ -29,37 +31,54 @@ Select the package corresponding to your operating system to download the applic
 
 ### 🍏 macOS
 - 📥 **[Download ppc2ForMac.zip](./ppc2ForMac.zip)**
-- **To Run:** Unzip the package and run the `ppc2.app` bundle.
+
+Because this app is independently developed and distributed via GitHub (without a paid Apple Developer ID certificate), macOS Gatekeeper may flag it on first launch. You can bypass this easily using one of two methods:
+
+#### Method 1: The Quick GUI Way (Recommended)
+1. Unzip the downloaded `ppc2ForMac.zip` file to reveal `ppc2.app`.
+2. **Right-click** (or hold the `Control` key and click) on `ppc2.app`.
+3. Select **Open** from the context menu.
+4. Click **Open** on the security warning dialog. (You only need to do this the very first time you run the app).
+
+#### Method 2: Via Terminal (If Gatekeeper blocks it)
+If macOS still blocks the app, open your **Terminal** app and run the following command to clear the download quarantine flag:  
+```bash
+xattr -cr /path/to/ppc2.app
+```
+For example, if you downloaded the zip file to your Downloads folder, you would run:
+```bash
+xattr -cr ~/Downloads/ppc2.app
+```
+Also, if you wish to edit the holiday files, control left-click on the app icon and select `Show package contents`  
+Under `Contents/Resources` are the holiday files called `20xxholidays.json` and are easily editable.  
 
 ### 🐧 Linux
-- 📥 **[Download ppc2-x86_64.AppImage](./ppc2-x86_64.AppImage)**
-- **To Run:** Make the AppImage executable and run it via terminal or file manager:
-  ```bash
-  chmod +x ppc2-x86_64.AppImage
-  ./ppc2-x86_64.AppImage
-  ```
+-  📥 **[Download ppc2-x86_64.AppImage](./ppc2-x86_64.AppImage)**
 
----
+To Run: Make the AppImage executable and run it via terminal or file manager.
+```bash
+chmod +x ppc2-x86_64.AppImage
+./ppc2-x86_64.AppImage
+```
+-  📥 **[Download ppc2ForLinux.zip](./ppc2ForLinux.zip)**
 
-## 🔒 Storage & Data Transparency
+This version is for Linux users who want to be able to edit the `20xxholidays.json` files.  
+
+### 🔒 Storage & Data Transparency
 
 Your privacy matters. All data is kept 100% offline and localized. Your application settings and calendar entries are stored in the standard configurations paths assigned by your operating system:
 
-* **Windows:** `~\AppData\Roaming\`
-* **macOS:** `~/Library/Application Support/`
-* **Linux:** `~/.local/share/` (Respects `$XDG_DATA_HOME`)
+Windows: `~\AppData\Roaming\`  
+macOS: `~/Library/Application Support/`   
+Linux: `~/.local/share/ (Respects $XDG_DATA_HOME)`
 
-### App Data Files:
-* `personal_events.json` — Stores all your typed spreadsheet calendar events.
-* `ppc_config.json` — Stores your layout size, dark/light mode preference, and color scheme selections.
+App Data Files:
 
-You can back up these specific files if you ever want to transfer your calendar data to a new computer!
+`personal_events.json` — Stores all your typed spreadsheet calendar events.  
+`ppc_config.json` — Stores your layout size, dark/light mode preference, and color scheme selections.
 
----
+You can back up these specific files if you ever want to transfer your calendar data to a new computer! 
 
-## 💬 Feedback & Bug Reports
-I am actively looking for user feedback on the UI responsiveness, keyboard navigation shortcuts, and cross-platform stability. Please feel free to open a GitHub **Issue** to share your thoughts, feature requests, or report any bugs!
+💬 Feedback & Bug Reports
 
-
-  ```
-
+I am actively looking for user feedback on the UI responsiveness, keyboard navigation shortcuts, and cross-platform stability. Please feel free to open a GitHub Issue to share your thoughts, feature requests, or report any bugs!
