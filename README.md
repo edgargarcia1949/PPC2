@@ -49,15 +49,21 @@ For example, if you downloaded the zip file to your Downloads folder, you would 
 ```bash
 xattr -cr ~/Downloads/ppc2.app
 ```
+Also, if you wish to edit the holiday files, control left-click on the app icon and select `Show package contents`  
+Under `Contents/Resources` are the holiday files called `20xxholidays.json` and are easily editable.  
+
 ### 🐧 Linux
 -  📥 **[Download ppc2-x86_64.AppImage](./ppc2-x86_64.AppImage)**
 
-To Run: Make the AppImage executable and run it via terminal or file manager
+To Run: Make the AppImage executable and run it via terminal or file manager.
 ```bash
 chmod +x ppc2-x86_64.AppImage
 ./ppc2-x86_64.AppImage
 ```
-    
+-  📥 **[Download ppc2ForLinux.zip](./ppc2ForLinux.zip)**
+
+This version is for Linux users who want to be able to edit the `20xxholidays.json` files.  
+
 ### 🔒 Storage & Data Transparency
 
 Your privacy matters. All data is kept 100% offline and localized. Your application settings and calendar entries are stored in the standard configurations paths assigned by your operating system:
